@@ -3,7 +3,9 @@ package auth
 import (
 	"crypto/sha256"
 	"errors"
+	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/sam-peets/micro/db"
@@ -13,9 +15,80 @@ import (
 )
 
 type Session struct {
-	Sid     uint64
-	Uid     uint64
-	Expires time.Time
+	Sid     [32]byte  `bson:"sid"`
+	Uid     uint32    `bson:"uid"`
+	Expires time.Time `bson:"expires"`
+}
+
+func (sess *Session) Verify() bool {
+	return sess.Expires.After(time.Now())
+}
+
+func (sess *Session) GetUser() (*user.User, error) {
+	connection := db.GetClient()
+	context, cancel := connection.Context()
+	defer cancel()
+
+	users, err := connection.GetCollection("users")
+	if err != nil {
+		return nil, err
+	}
+
+	var u user.User
+	err = users.FindOne(context, bson.M{"uid": sess.Uid}).Decode(&u)
+	if err != nil {
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+func GetSessionBySid(sid [32]byte) (*Session, error) {
+	connection := db.GetClient()
+	context, cancel := connection.Context()
+	defer cancel()
+
+	sessions, err := connection.GetCollection("sessions")
+	if err != nil {
+		return nil, err
+	}
+
+	var sess Session
+	err = sessions.FindOne(context, bson.M{"sid": sid}).Decode(&sess)
+	if err != nil {
+		return nil, err
+	}
+
+	if sess.Verify() {
+		return &sess, nil
+	} else {
+		return nil, errors.New("session expired")
+	}
+}
+
+func NewSession(user user.User) (*Session, error) {
+	now := time.Now()
+
+	sid := strconv.FormatInt(int64(user.Uid), 10) + strconv.FormatInt(now.Unix(), 10)
+	sidHash := sha256.Sum256([]byte(sid))
+	fmt.Println("generated sid", sidHash)
+	sess := Session{
+		Sid:     sidHash,
+		Uid:     user.Uid,
+		Expires: now.AddDate(0, 0, 1),
+	}
+
+	connection := db.GetClient()
+	context, cancel := connection.Context()
+	defer cancel()
+
+	sessions, err := connection.GetCollection("sessions")
+	if err != nil {
+		return nil, err
+	}
+
+	sessions.InsertOne(context, sess)
+	return &sess, nil
 }
 
 type UserPayload struct {
@@ -74,4 +147,37 @@ func Auth(payload *UserPayload) (*Session, error) {
 		return nil, err
 	}
 
+	if u.Hash != hashed_password {
+		return nil, errors.New("incorrect password")
+	}
+
+	sessions, err := connection.GetCollection("sessions")
+	if err != nil {
+		return nil, err
+	}
+
+	var sess Session
+	err = sessions.FindOne(context, bson.M{"uid": u.Uid}).Decode(&sess)
+	if err != nil {
+		nsess, err := NewSession(u)
+		if err != nil {
+			return nil, err
+		}
+		return nsess, nil
+	}
+
+	if sess.Verify() {
+		return &sess, nil
+	} else {
+		_, err := sessions.DeleteOne(context, bson.M{"uid": u.Uid})
+		if err != nil {
+			return nil, fmt.Errorf("error deleting old session: %w", err)
+		}
+
+		nsess, err := NewSession(u)
+		if err != nil {
+			return nil, err
+		}
+		return nsess, nil
+	}
 }

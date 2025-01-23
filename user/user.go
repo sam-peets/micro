@@ -11,10 +11,6 @@ type User struct {
 	Hash     [32]byte `bson:"hash"`
 }
 
-// func createUser(payload User) (*User, error) {
-// todo
-// }
-
 func CreateUser(user *User) error {
 	connection := db.GetClient()
 	context, cancel := connection.Context()

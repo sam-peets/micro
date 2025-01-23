@@ -20,4 +20,10 @@ func main() {
 		Password: "asdf",
 	})
 	fmt.Println(user, err)
+
+	sess, err := auth.Auth(&auth.UserPayload{
+		Username: "tester2",
+		Password: "asdf",
+	})
+	fmt.Println(sess, err)
 }
