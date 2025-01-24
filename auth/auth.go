@@ -2,6 +2,7 @@ package auth
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -15,7 +16,7 @@ import (
 )
 
 type Session struct {
-	Sid     [32]byte  `bson:"sid"`
+	Sid     string    `bson:"sid"`
 	Uid     uint32    `bson:"uid"`
 	Expires time.Time `bson:"expires"`
 }
@@ -43,7 +44,7 @@ func (sess *Session) GetUser() (*user.User, error) {
 	return &u, nil
 }
 
-func GetSessionBySid(sid [32]byte) (*Session, error) {
+func GetSessionBySid(sid string) (*Session, error) {
 	connection := db.GetClient()
 	context, cancel := connection.Context()
 	defer cancel()
@@ -56,6 +57,7 @@ func GetSessionBySid(sid [32]byte) (*Session, error) {
 	var sess Session
 	err = sessions.FindOne(context, bson.M{"sid": sid}).Decode(&sess)
 	if err != nil {
+		fmt.Println("ruh roh")
 		return nil, err
 	}
 
@@ -71,9 +73,10 @@ func NewSession(user user.User) (*Session, error) {
 
 	sid := strconv.FormatInt(int64(user.Uid), 10) + strconv.FormatInt(now.Unix(), 10)
 	sidHash := sha256.Sum256([]byte(sid))
+	hexSidHash := hex.EncodeToString(sidHash[:])
 	fmt.Println("generated sid", sidHash)
 	sess := Session{
-		Sid:     sidHash,
+		Sid:     hexSidHash,
 		Uid:     user.Uid,
 		Expires: now.AddDate(0, 0, 1),
 	}

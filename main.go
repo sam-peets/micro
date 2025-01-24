@@ -1,10 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/sam-peets/micro/auth"
 	"github.com/sam-peets/micro/db"
+	"github.com/sam-peets/micro/posts"
 	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
@@ -15,15 +17,42 @@ func main() {
 	defer cancel()
 	client.Client.Ping(context, readpref.Primary())
 
-	user, err := auth.NewUser(&auth.UserPayload{
-		Username: "tester2",
-		Password: "asdf",
-	})
-	fmt.Println(user, err)
+	r := gin.Default()
 
-	sess, err := auth.Auth(&auth.UserPayload{
-		Username: "tester2",
-		Password: "asdf",
+	api := r.Group("/api")
+	{
+		api.POST("/auth", auth.HandleAuth)
+		api.POST("/auth/new", auth.HandleAuthNew)
+		api.POST("/auth/validate", auth.HandleAuthValidate)
+
+		api.POST("/posts", posts.HandleGetPost)
+		api.POST("/posts/new", posts.HandleNewPost)
+		api.POST("/posts/recent", posts.HandleRecentPosts)
+	}
+
+	r.LoadHTMLGlob("template/*.html")
+
+	bind := func(path, file string, obj any) {
+		r.GET(path, func(c *gin.Context) {
+			c.HTML(http.StatusOK, file, obj)
+		})
+	}
+
+	bind("/", "index.html", gin.H{
+		"title": "Index",
 	})
-	fmt.Println(sess, err)
+
+	bind("/login", "login.html", gin.H{
+		"title": "Login",
+	})
+
+	r.StaticFS("/static", http.Dir("static"))
+
+	// user, err := auth.NewUser(&auth.UserPayload{
+	// Username: "tester2",
+	// Password: "asdf",
+	// })
+	// fmt.Println(user, err)
+
+	r.Run()
 }

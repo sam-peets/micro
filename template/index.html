@@ -1,0 +1,54 @@
+{{ template "header" . }}
+<script>
+    function onTemplateLoad(user) {
+        const el_posts = document.getElementById("posts")
+        apiPost("/api/posts/recent", {
+            "sid": readCookie("session"),
+            "limit": 10,
+        }).then((res) => {
+            if (res.status != 200) {
+                el_posts.innerHTML = "failed to load recent posts"
+            } else {
+                res.json().then((j) => {
+                    for (i in j) {
+                        let post = j[i]
+                        console.log(post)
+                        el_posts.innerHTML += post["Content"] + "<br>"
+                    }
+                })
+            }
+        })
+    }
+
+    function createPost() {
+        const el_postarea = document.getElementById("postarea")
+        const el_poststatus = document.getElementById("poststatus")
+
+        apiPost("/api/posts/new", {
+            "sid": readCookie("session"),
+            "content": el_postarea.value
+        }).then((res) => {
+            if (res.status != 200) {
+                el_poststatus.innerHTML = "Post Failed"
+            } else {
+                el_poststatus.innerHTML = "Posted"
+            }
+        })
+    }
+</script>
+<style>
+    #postarea {
+        resize: none;
+        margin: auto;
+        width: 90%;
+        height: 70px;
+    }
+</style>
+<body>
+    <pre id="poststatus"></pre>
+    <textarea id="postarea" placeholder="type here"></textarea>
+    <button onclick="createPost()", id="postbutton">Post</button>
+    <hr>
+    <div id="posts"></div>
+</body>
+{{ template "footer" . }}
