@@ -1,3 +1,5 @@
+const user_cache = {}
+
 function createCookie(name,value,days) {
 	if (days) {
 		var date = new Date();
@@ -54,11 +56,13 @@ function signInSignOut() {
     window.location.href = "/login"
 }
 
+const allowed_loggedout = ["/login", "/signup"]
+
 window.addEventListener('load', async function() {
     let u = await testSession()
-    if (this.location.pathname == "/login" && u) {
+    if (this.location.pathname in allowed_loggedout && u) {
         this.location.href = "/"
-    } else if (this.location.pathname != "/login" && !u) {
+    } else if (this.location.pathname in allowed_loggedout && !u) {
         this.location.href = "/login";
     }
 
@@ -73,3 +77,25 @@ window.addEventListener('load', async function() {
         onTemplateLoad(u)
     }
 })
+
+async function getUserFromUserId(uid, caching) {
+    if (caching) {
+        if (uid in user_cache) {
+            return user_cache[uid]
+        }
+    }
+    res = await apiPost("/api/users", {
+        "sid": readCookie("session"),
+        "uid": uid
+    })
+    
+    if (res.status != 200) {
+        return null
+    } else {
+        let u = await res.json()
+        if (caching) {
+            user_cache[uid] = u
+        }
+        return u
+    }
+}

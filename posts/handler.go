@@ -51,13 +51,13 @@ func HandleNewPost(c *gin.Context) {
 		return
 	}
 
-	user, err := sess.GetUser()
+	u, err := sess.GetUser()
 	if err != nil {
 		c.JSON(401, gin.H{"err": err.Error()})
 		return
 	}
 
-	p, err := NewPost(*user, payload.Content)
+	p, err := NewPost(*u, payload.Content)
 	if err != nil {
 		c.JSON(401, gin.H{"err": err.Error()})
 		return
@@ -68,6 +68,7 @@ func HandleNewPost(c *gin.Context) {
 type RecentPostsPayload struct {
 	Sid   string `json:"sid"`
 	Limit int    `json:"limit"`
+	Skip  int    `json:"skip"`
 }
 
 func HandleRecentPosts(c *gin.Context) {
@@ -84,7 +85,7 @@ func HandleRecentPosts(c *gin.Context) {
 		return
 	}
 
-	posts, err := GetRecent(payload.Limit)
+	posts, err := GetRecent(payload.Limit, payload.Skip)
 	if err != nil {
 		c.JSON(500, gin.H{"err": err.Error()})
 		return

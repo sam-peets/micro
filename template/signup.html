@@ -6,7 +6,7 @@
         let el_loginButton = document.getElementById("loginButton")
         let el_loginStatus = document.getElementById("loginStatus")
 
-        apiPost("/api/auth", {
+        apiPost("/api/auth/new", {
             "username": el_username.value,
             "password": el_password.value
         }).then((res) => {
@@ -17,20 +17,20 @@
                     window.location.href = "/"
                 })
             } else {
-                el_loginStatus.innerHTML = "Incorrect Username or Password"
+                el_loginStatus.innerHTML = "Sign Up Failed"
             }
         })
         return false
     }
 </script>
-<div id="login">
+<div id="signup">
     <p id="loginStatus" style="color: red;"></p>
     <form onsubmit="return doLogin()">
     <input type="text" id="username" placeholder="username">
     <input type="password" id="password" placeholder="password">
-    <button id="loginButton" type="submit">Login</button>
+    <button id="loginButton" type="submit">Sign Up</button>
     </form>
     <br>
-    <a href="/signup">Sign Up Instead</a>
+    <a href="/login">Login Instead</a>
 </div>
 {{ template "footer" . }}

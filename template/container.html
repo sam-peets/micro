@@ -22,6 +22,13 @@ background-color: lightgray;
 border: none;
 height: 1px;
 }
+
+#post_container {
+    padding: 10px;
+    border: 1px solid lightgray;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
         </style>
         <script src="/static/global.js"></script>
         <title>Micro - {{ .title }}</title>
@@ -34,9 +41,11 @@ height: 1px;
             <button id="signin_signout" onclick="signInSignOut()">Sign In</button>
             <hr>
             <div id="content">
+                <main>
 {{ end }}
 
 {{ define "footer" }}
+</main>
          </div>
         </div>
     </body>

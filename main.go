@@ -28,6 +28,8 @@ func main() {
 		api.POST("/posts", posts.HandleGetPost)
 		api.POST("/posts/new", posts.HandleNewPost)
 		api.POST("/posts/recent", posts.HandleRecentPosts)
+
+		api.POST("/users", auth.HandleGetUser)
 	}
 
 	r.LoadHTMLGlob("template/*.html")
@@ -39,11 +41,15 @@ func main() {
 	}
 
 	bind("/", "index.html", gin.H{
-		"title": "Index",
+		"title": "Micro",
 	})
 
 	bind("/login", "login.html", gin.H{
 		"title": "Login",
+	})
+
+	bind("/signup", "signup.html", gin.H{
+		"title": "Sign Up",
 	})
 
 	r.StaticFS("/static", http.Dir("static"))
