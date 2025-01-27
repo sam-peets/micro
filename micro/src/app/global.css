@@ -1,0 +1,12 @@
+.center {
+    margin: auto;
+}
+
+.border {
+    padding: 10px;
+    border: 1px solid lightgrey;
+}
+
+body {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}

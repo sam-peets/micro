@@ -6,9 +6,9 @@ import (
 )
 
 type User struct {
-	Username string   `bson:"username"`
-	Uid      uint32   `bson:"uid"`
-	Hash     [32]byte `bson:"hash"`
+	Username string   `bson:"username" json:"username"`
+	Uid      uint32   `bson:"uid" json:"uid"`
+	Hash     [32]byte `bson:"hash" json:"-"`
 }
 
 func CreateUser(user *User) error {

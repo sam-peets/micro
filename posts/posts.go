@@ -11,10 +11,10 @@ import (
 )
 
 type Post struct {
-	Uid       uint32    `bson:"uid"`
-	PostId    uint32    `bson:"postid"`
-	Content   string    `bson:"content"`
-	Timestamp time.Time `bson:"timestamp"`
+	Uid       uint32    `bson:"uid" json:"uid"`
+	PostId    uint32    `bson:"postid" json:"postid"`
+	Content   string    `bson:"content" json:"content"`
+	Timestamp time.Time `bson:"timestamp" json:"timestamp"`
 }
 
 func (p *Post) User() (*user.User, error) {

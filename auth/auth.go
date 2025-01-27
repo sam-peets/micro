@@ -16,9 +16,9 @@ import (
 )
 
 type Session struct {
-	Sid     string    `bson:"sid"`
-	Uid     uint32    `bson:"uid"`
-	Expires time.Time `bson:"expires"`
+	Sid     string    `bson:"sid" json:"sid"`
+	Uid     uint32    `bson:"uid" json:"uid"`
+	Expires time.Time `bson:"expires" json:"expires"`
 }
 
 func (sess *Session) Verify() bool {

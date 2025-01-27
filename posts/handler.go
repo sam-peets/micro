@@ -66,9 +66,8 @@ func HandleNewPost(c *gin.Context) {
 }
 
 type RecentPostsPayload struct {
-	Sid   string `json:"sid"`
-	Limit int    `json:"limit"`
-	Skip  int    `json:"skip"`
+	Limit int `json:"limit"`
+	Skip  int `json:"skip"`
 }
 
 func HandleRecentPosts(c *gin.Context) {
@@ -76,12 +75,6 @@ func HandleRecentPosts(c *gin.Context) {
 	err := c.BindJSON(&payload)
 	if err != nil {
 		c.JSON(400, gin.H{"err": err.Error()})
-		return
-	}
-
-	_, err = auth.GetSessionBySid(payload.Sid)
-	if err != nil {
-		c.JSON(401, gin.H{"err": err.Error()})
 		return
 	}
 
