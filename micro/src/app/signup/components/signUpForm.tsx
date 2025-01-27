@@ -1,7 +1,7 @@
 "use client";
 
 import Cookies from "js-cookie";
-import { SignIn } from "@/app/lib/api";
+import { SignUp } from "@/app/lib/api";
 import { FormEvent, useState } from "react";
 
 export default function SignInForm() {
@@ -17,7 +17,7 @@ export default function SignInForm() {
             return;
         }
 
-        const sess = await SignIn(username, password)
+        const sess = await SignUp(username, password)
         if (!sess) {
             setError("incorrect username or password");
             return;
@@ -32,7 +32,7 @@ export default function SignInForm() {
             <p>{error}</p>
             <input type="text" name="username" placeholder="username"></input>
             <input type="password" name="password" placeholder="password"></input>
-            <button type="submit">Sign In</button>
+            <button type="submit">Sign Up</button>
         </form>
     )
 }

@@ -86,3 +86,26 @@ func HandleRecentPosts(c *gin.Context) {
 
 	c.JSON(200, posts)
 }
+
+type UserPostsPayload struct {
+	Uid   uint32 `json:"uid"`
+	Limit int    `json:"limit"`
+	Skip  int    `json:"skip"`
+}
+
+func HandleUserPosts(c *gin.Context) {
+	var payload UserPostsPayload
+	err := c.BindJSON(&payload)
+	if err != nil {
+		c.JSON(400, gin.H{"err": err.Error()})
+		return
+	}
+
+	posts, err := GetByUser(payload.Uid, payload.Limit, payload.Skip)
+	if err != nil {
+		c.JSON(500, gin.H{"err": err.Error()})
+		return
+	}
+
+	c.JSON(200, posts)
+}

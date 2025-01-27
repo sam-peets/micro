@@ -1,4 +1,5 @@
-import { User, Post } from "../types";
+import { Post } from "../types";
+import UsernameLink from "./usernameLink";
 
 interface PostProps {
     post: Post
@@ -7,7 +8,8 @@ interface PostProps {
 export default function PostElem({post}: PostProps) {
     return (
         <div className="border">
-            <p>{post.user.username} - {post.timestamp}</p>
+            <UsernameLink user={post.user}/>
+            <p>{post.timestamp}</p>
             <p>{post.content}</p>
         </div>
     )

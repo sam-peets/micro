@@ -1,18 +1,34 @@
-import { useActionState } from "react"
+"use client";
 
-function testAction(x: any) {
-    console.log(x)
-}
+import Cookies from "js-cookie";
+import { FormEvent } from "react";
+import { CreatePost } from "../lib/api";
 
 export default function createPost() {
-    let handleSubmit = (event: any) => {
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log(event.target.elements.text.value)
+        const form = event.currentTarget
+        const formElements = form.elements as typeof form.elements & {
+            textInput: {value: string}
+        }
+        const sess = Cookies.get("session")
+        if (sess === undefined) {
+            alert("log in first!")
+            return;
+        } else {
+            const p = CreatePost(sess, formElements.textInput.value)
+        }
     }
     return (
         <form onSubmit={handleSubmit}>
-           <textarea name="text" placeholder="type" style={{width: "100%", resize: "none", }}></textarea>
-           <button name="post" type="submit">Post</button>
+            <div style={{width: "100%", display: "flex"}}>
+                <div style={{float: "left", width: "90%", height: "50px"}}>
+                    <textarea id="textInput" name="text" placeholder="type" style={{width: "100%", height: "100%", resize: "none", boxSizing: "border-box"}}></textarea>
+                </div>
+                <div style={{float: "right", height: "50px", width: "10%"}}>
+                    <button name="post" type="submit" style={{width: "100%", height: "100%"}}>Post</button>
+                </div>
+            </div>
         </form>
     )
 }

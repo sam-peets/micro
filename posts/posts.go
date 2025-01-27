@@ -65,7 +65,7 @@ func GetPost(id uint32) (*Post, error) {
 	return &p, nil
 }
 
-func GetRecent(limit int, skip int) ([]Post, error) {
+func GetRecent(limit, skip int) ([]Post, error) {
 	connection := db.GetClient()
 	context, cancel := connection.Context()
 	defer cancel()
@@ -78,6 +78,30 @@ func GetRecent(limit int, skip int) ([]Post, error) {
 	opts := options.Find().SetSort(bson.M{"_id": -1}).SetSkip(int64(skip)).SetLimit(int64(limit))
 
 	cur, err := posts.Find(context, bson.M{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	var recent_posts []Post
+	err = cur.All(context, &recent_posts)
+	if err != nil {
+		return nil, err
+	}
+	return recent_posts, nil
+}
+
+func GetByUser(uid uint32, limit, skip int) ([]Post, error) {
+	connection := db.GetClient()
+	context, cancel := connection.Context()
+	defer cancel()
+
+	posts, err := connection.GetCollection("posts")
+	if err != nil {
+		return nil, err
+	}
+
+	opts := options.Find().SetSort(bson.M{"_id": -1}).SetSkip(int64(skip)).SetLimit(int64(limit))
+
+	cur, err := posts.Find(context, bson.M{"uid": uid}, opts)
 	if err != nil {
 		return nil, err
 	}

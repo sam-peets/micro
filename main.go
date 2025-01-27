@@ -28,6 +28,7 @@ func main() {
 		api.POST("/posts", posts.HandleGetPost)
 		api.POST("/posts/new", posts.HandleNewPost)
 		api.POST("/posts/recent", posts.HandleRecentPosts)
+		api.POST("/posts/user", posts.HandleUserPosts)
 
 		api.POST("/users", auth.HandleGetUser)
 	}

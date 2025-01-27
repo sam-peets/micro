@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { ApiCall, GetRecent, GetUser } from './lib/api';
-import { Post, User } from './types';
+import { GetRecent } from './lib/api';
+import { Post } from './types';
 import PostList from './components/postList';
 import CreatePost from './components/createPost';
 
@@ -17,7 +17,9 @@ export default function Page() {
   }, [])
   return (
     <main>
+      <h1>Micro</h1>
       <CreatePost/>
+      <hr style={{border: "none", height: "1px", color: "lightgray", backgroundColor: "lightgray"}}/>
       <PostList posts={data}></PostList>
     </main>
   );

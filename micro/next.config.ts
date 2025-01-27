@@ -1,11 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-module.exports = {
-  async rewrites() {
+  output: "export",
+async rewrites() {
     return [
       {
         source: '/api/:path*',
@@ -13,6 +10,6 @@ module.exports = {
       }
     ]
   }
-}
+};
 
-export default nextConfig;
+module.exports = nextConfig;

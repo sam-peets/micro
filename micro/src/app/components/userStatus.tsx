@@ -3,6 +3,7 @@ import Cookies from "js-cookie"
 import { useEffect, useState } from "react";
 import { GetSession, ValidateSession } from "../lib/auth";
 import { User } from "../types";
+import UsernameLink from "./usernameLink";
 
 function login() {
     window.location.href = "/signin"
@@ -38,8 +39,8 @@ export default function UserStatus() {
 
     return (
         <div style={{float: "right"}}>
-            <label style={{padding: "2px"}}>{labelText}</label>
-            <button onClick={login}>{buttonText}</button>
+            <UsernameLink user={data}/>
+            <button onClick={buttonAction}>{buttonText}</button>
         </div>
     )
 }
