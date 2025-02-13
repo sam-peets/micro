@@ -75,7 +75,6 @@ func HandleAuthValidate(c *gin.Context) {
 }
 
 type GetUserPayload struct {
-	Sid string `json:"sid"`
 	Uid uint32 `json:"uid"`
 }
 
@@ -84,12 +83,6 @@ func HandleGetUser(c *gin.Context) {
 	err := c.BindJSON(&payload)
 	if err != nil {
 		c.JSON(400, gin.H{"err": err.Error()})
-		return
-	}
-
-	_, err = GetSessionBySid(payload.Sid)
-	if err != nil {
-		c.JSON(401, gin.H{"err": err.Error()})
 		return
 	}
 

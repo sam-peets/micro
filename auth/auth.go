@@ -1,17 +1,17 @@
 package auth
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"math/rand"
-	"strconv"
 	"time"
 
 	"github.com/sam-peets/micro/db"
 	"github.com/sam-peets/micro/user"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -71,10 +71,9 @@ func GetSessionBySid(sid string) (*Session, error) {
 func NewSession(user user.User) (*Session, error) {
 	now := time.Now()
 
-	sid := strconv.FormatInt(int64(user.Uid), 10) + strconv.FormatInt(now.Unix(), 10)
-	sidHash := sha256.Sum256([]byte(sid))
-	hexSidHash := hex.EncodeToString(sidHash[:])
-	fmt.Println("generated sid", sidHash)
+	sid := make([]byte, 32)
+	rand.Read(sid)
+	hexSidHash := hex.EncodeToString(sid)
 	sess := Session{
 		Sid:     hexSidHash,
 		Uid:     user.Uid,
@@ -115,8 +114,15 @@ func NewUser(payload *UserPayload) (*user.User, error) {
 	}
 
 	hashed_password := sha256.Sum256([]byte(payload.Password))
-	uid := rand.Uint32()
-	for _, err := user.GetUser(uid); err == nil; uid = rand.Uint32() {
+
+	opts := options.FindOne().SetSort(bson.M{"uid": -1})
+	var lastUser user.User
+	err = users.FindOne(context, bson.M{}, opts).Decode(&lastUser)
+	var uid uint32
+	if err != nil {
+		uid = 1
+	} else {
+		uid = lastUser.Uid + 1
 	}
 
 	u := user.User{

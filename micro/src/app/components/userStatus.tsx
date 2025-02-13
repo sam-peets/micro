@@ -26,13 +26,11 @@ export default function UserStatus() {
             }
         })
     }, [])
-    let labelText, buttonText, buttonAction;
+    let buttonText, buttonAction;
     if (data) {
-        labelText = data.username;
         buttonText = "Sign Out"
         buttonAction = logout;
     } else {
-        labelText = "not signed in";
         buttonText = "Sign In"
         buttonAction = login;
     }

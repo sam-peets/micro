@@ -1,8 +1,6 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/sam-peets/micro/auth"
 	"github.com/sam-peets/micro/db"
@@ -33,27 +31,27 @@ func main() {
 		api.POST("/users", auth.HandleGetUser)
 	}
 
-	r.LoadHTMLGlob("template/*.html")
+	// r.LoadHTMLGlob("template/*.html")
 
-	bind := func(path, file string, obj any) {
-		r.GET(path, func(c *gin.Context) {
-			c.HTML(http.StatusOK, file, obj)
-		})
-	}
+	// bind := func(path, file string, obj any) {
+	// 	r.GET(path, func(c *gin.Context) {
+	// 		c.HTML(http.StatusOK, file, obj)
+	// 	})
+	// }
 
-	bind("/", "index.html", gin.H{
-		"title": "Micro",
-	})
+	// bind("/", "index.html", gin.H{
+	// 	"title": "Micro",
+	// })
 
-	bind("/login", "login.html", gin.H{
-		"title": "Login",
-	})
+	// bind("/login", "login.html", gin.H{
+	// 	"title": "Login",
+	// })
 
-	bind("/signup", "signup.html", gin.H{
-		"title": "Sign Up",
-	})
+	// bind("/signup", "signup.html", gin.H{
+	// 	"title": "Sign Up",
+	// })
 
-	r.StaticFS("/static", http.Dir("static"))
+	// r.StaticFS("/static", http.Dir("static"))
 
 	// user, err := auth.NewUser(&auth.UserPayload{
 	// Username: "tester2",

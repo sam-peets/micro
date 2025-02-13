@@ -23,9 +23,9 @@ interface PostResponse {
     timestamp: string,
 }
 
-async function postResponseToPost(res: PostResponse): Promise<Post> {
+export async function postResponseToPost(res: PostResponse): Promise<Post> {
     const u = await GetUser(res.uid);
-    
+
     return {
         "user": u,
         "content": res.content,
@@ -36,10 +36,12 @@ async function postResponseToPost(res: PostResponse): Promise<Post> {
 
 export async function GetRecent(limit: number, skip: number): Promise<Post[]> {
     const x: PostResponse[] = (await ApiCall("/api/posts/recent", {
-        "sid": "57559913b3ace9a5a5298ed5a8542c69bc07bbeb3679babc3e840ed647c3400d",
         "limit": limit,
         "skip": skip
     })).data
+    if (x == null) {
+        return []
+    }
 
     const posts: Post[] = [];
     for (const pr of x) {

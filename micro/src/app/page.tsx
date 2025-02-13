@@ -15,10 +15,11 @@ export default function Page() {
       setData(x)
     })
   }, [])
+
   return (
     <main>
       <h1>Micro</h1>
-      <CreatePost/>
+      <CreatePost action={(p: Post) => setData([p, ...data])}/>
       <hr style={{border: "none", height: "1px", color: "lightgray", backgroundColor: "lightgray"}}/>
       <PostList posts={data}></PostList>
     </main>
